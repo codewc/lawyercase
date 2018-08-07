@@ -1,0 +1,9 @@
+server:
+  port: 6667
+spring:
+  application:
+    name: duowen-crawler-lawcase
+  data:
+    mongodb:
+      #mongodb设置了密码，这样配置：spring.data.mongodb.uri=mongodb://name:pass@localhost:27017/dbname
+      uri: mongodb://192.168.42.129:27017/test

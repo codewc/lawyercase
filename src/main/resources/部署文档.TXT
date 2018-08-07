@@ -1,0 +1,2 @@
+#https://www.cnblogs.com/hupeng1234/p/7000499.html
+service mongodb start
