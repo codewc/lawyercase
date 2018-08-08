@@ -17,8 +17,14 @@ import java.util.List;
 @Slf4j
 public class DocCategory implements WenShuCrawlerStrategy {
 
+    private WebElement element;
+
+    public DocCategory(WebElement element) {
+        this.element = element;
+    }
+
     @Override
-    public int calculateNegativeScore(WebElement element) {
+    public int calculateNegativeScore() {
         int ret = WenShuCrawlerStrategy.FAIL_SCORE;
         if (element == null) {
             return ret;

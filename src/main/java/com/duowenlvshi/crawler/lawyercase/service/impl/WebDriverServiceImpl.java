@@ -1,22 +1,21 @@
 package com.duowenlvshi.crawler.lawyercase.service.impl;
 
-import com.duowenlvshi.crawler.lawyercase.exception.CommonErrorHandler;
+import com.duowenlvshi.crawler.lawyercase.bean.MatchRule;
 import com.duowenlvshi.crawler.lawyercase.model.LawCaseDoc;
 import com.duowenlvshi.crawler.lawyercase.model.TaskSchedule;
 import com.duowenlvshi.crawler.lawyercase.model.constant.TaskScheduleHelper;
 import com.duowenlvshi.crawler.lawyercase.repository.LawCaseDocRepository;
 import com.duowenlvshi.crawler.lawyercase.repository.TaskScheduleRepository;
 import com.duowenlvshi.crawler.lawyercase.service.AsyncService;
+import com.duowenlvshi.crawler.lawyercase.service.WebDriverBootstrapService;
 import com.duowenlvshi.crawler.lawyercase.service.WebDriverService;
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.TaskScheduleService;
-import com.duowenlvshi.crawler.lawyercase.service.wenshu.WenShuCrawlerStrategy;
-import com.duowenlvshi.crawler.lawyercase.service.wenshu.impl.DocCategory;
+import com.duowenlvshi.crawler.lawyercase.util.RuleMatchUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +45,9 @@ public class WebDriverServiceImpl implements WebDriverService {
     @Autowired
     private TaskScheduleRepository taskScheduleRepository;
 
+    @Autowired
+    private WebDriverBootstrapService webDriverBootstrapService;
+
     /**
      * 空格
      */
@@ -55,8 +57,15 @@ public class WebDriverServiceImpl implements WebDriverService {
     public void test() {
         try {
             String refereeingDay = "2018-08-06";
-            TaskSchedule taskSchedule = taskScheduleService.getTaskSchedule(refereeingDay);
-            WebDriver driver = init(taskSchedule);
+            TaskSchedule taskSchedule = initTaskSchedule(refereeingDay);
+            WebDriver driver = initWebDriver();
+            driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS).implicitlyWait(30, TimeUnit.SECONDS);
+            List<MatchRule> rules = RuleMatchUtils.buildDefaultMathRules(refereeingDay);
+            WebElement head_maxsearch_btn = driver.findElement(By.xpath("//*[@id=\"head_maxsearch_btn\"]"));
+            head_maxsearch_btn.click();
+            proceedMatchRule(driver, rules);
+            WebElement searchBtn = driver.findElement(By.className("head_search_btn"));
+            searchBtn.click();
             List<WebElement> webElements = driver.findElements(By.ByXPath.xpath("//*[@id=\"resultList\"]/div/table/tbody/tr[1]/td/div/a[2]"));
             for (WebElement element : webElements) {
                 String href = element.getAttribute("href");
@@ -75,7 +84,7 @@ public class WebDriverServiceImpl implements WebDriverService {
             String current_handle = driver.getWindowHandle();
             while (it.hasNext()) {
                 handle = it.next();
-                if (current_handle == handle) {
+                if (current_handle.equals(handle)) {
                     continue;
                 }
                 //跳入新窗口,并获得新窗口的driver - newWindow
@@ -96,20 +105,69 @@ public class WebDriverServiceImpl implements WebDriverService {
 
     @Override
     public TaskSchedule initTaskSchedule(String refereeingDay) {
-//        WebDriver driver = init(refereeingDay);
-//        WebElement webElement = driver.findElement(By.ByXPath.xpath("//*[@id=\"content\"]"));
-//        WenShuCrawlerStrategy strategy = new DocCategory();
-//        int ret = strategy.calculateNegativeScore(webElement);
-        return taskScheduleService.getTaskSchedule(refereeingDay);
+        TaskSchedule taskSchedule = taskScheduleService.getTaskSchedule(refereeingDay);
+        if (StringUtils.isBlank(refereeingDay) || taskSchedule.getCaseTotalNum() > 0) {
+            return taskSchedule;
+        }
+        // 统计任务表需要爬取案例条数
+        initCaseTotalNum(refereeingDay, taskSchedule);
+        return taskSchedule;
     }
 
+    @Override
+    public WebDriver proceedMatchRule(WebDriver driver, List<MatchRule> rules) {
+        for (MatchRule rule : rules) {
+            String key = rule.getKey();
+            List<String> values = rule.getValue();
+            if (RuleMatchUtils.RULE_TYPE_REFEREEING_DAY.equals(key)) {
+                WebElement beginTimeCPRQ = driver.findElement(By.xpath("//*[@id=\"beginTimeCPRQ\"]"));
+                beginTimeCPRQ.clear();
+                beginTimeCPRQ.sendKeys(values.get(0) + BLANK_SPACE);// 设置查询开始时间
+                WebElement endTimeCPRQ = driver.findElement(By.xpath("//*[@id=\"endTimeCPRQ\"]"));
+                endTimeCPRQ.clear();
+                endTimeCPRQ.sendKeys(BLANK_SPACE + values.get(1));// 设置结束开始时间
+                continue;
+            }
 
-    private WebDriver init(TaskSchedule schedule) {
-        String refereeingDay = schedule.getRefereeingDay();
-        System.setProperty("webdriver.chrome.driver", "E:\\wangchun\\Intelli_workspace\\crawler\\src\\main\\resources\\chromedriver.exe");
-        WebDriver driver = new ChromeDriver();
-        ((ChromeDriver) driver).setErrorHandler(new CommonErrorHandler(false));
-        driver.get("http://wenshu.court.gov.cn/");
+            if (RuleMatchUtils.RULE_TYPE_DOC_CATEGORY.equals(key)) {
+                WebElement docButton = driver.findElement(By.xpath("//*[@id=\"advanceSearchContent\"]/div[9]/div[2]/div/table/tbody/tr/td[2]/input"));
+                docButton.click();
+                String value = rule.getValue().get(0);//FIXME:
+                //List<WebElement> options = driver.findElements(By.xpath("//*[@id=\"adsearch_WSLX\"]/option"));
+                List<WebElement> options = driver.findElements(By.xpath("//*[@id=\"advanceSearchContent\"]/div[9]/div[2]/div/div/ul/li"));
+                for (WebElement element : options) {
+                    String text = element.getText();
+                    log.info(text);
+                    if (value.equals(text)) {
+                        log.info("OK -> " + text);
+                        element.click();
+                        continue;
+                    }
+                }
+                continue;
+            }
+
+            if (RuleMatchUtils.RULE_TYPE_LEVEL_CASE.equals(key)) {
+                WebElement docButton = driver.findElement(By.xpath("//*[@id=\"advanceSearchContent\"]/div[7]/div[2]/div/table/tbody/tr/td[2]/input"));
+                docButton.click();
+                String value = rule.getValue().get(0);//FIXME:
+                List<WebElement> options = driver.findElements(By.xpath("//*[@id=\"advanceSearchContent\"]/div[7]/div[2]/div/div/ul/li"));
+                for (WebElement element : options) {
+                    String text = element.getText();
+                    log.info(text);
+                    if (value.equals(text)) {
+                        element.click();
+                        continue;
+                    }
+                }
+                continue;
+            }
+        }
+        return driver;
+    }
+
+    private void initCaseTotalNum(String refereeingDay, TaskSchedule taskSchedule) {
+        WebDriver driver = initWebDriver();
         try {
             driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
             WebElement head_maxsearch_btn = driver.findElement(By.xpath("//*[@id=\"head_maxsearch_btn\"]"));
@@ -125,18 +183,32 @@ public class WebDriverServiceImpl implements WebDriverService {
             WebElement pageInfo = driver.findElement(By.xpath("//*[@id=\"pageNumber\"]"));
             String total = pageInfo.getAttribute("total");
             if (StringUtils.isNotBlank(total)) {
-                schedule.setCaseTotalNum(new Integer(total));
-                schedule.setState(TaskScheduleHelper.STATE_10);
-                schedule.setUpdateDate(new Date());
-                taskScheduleRepository.save(schedule);
+                taskSchedule.setCaseTotalNum(new Integer(total));
+                taskSchedule.setState(TaskScheduleHelper.STATE_10);
+                taskSchedule.setUpdateDate(new Date());
+                taskScheduleRepository.save(taskSchedule);
             }
             log.info("查询到的总页数 ->{} ", total);
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("test发生错误", e);
+            log.error("initTaskSchedule发生错误-> {}", e);
+        } finally {
+            if (driver != null) {
+                driver.close();
+            }
         }
-        return driver;
     }
+
+
+    /**
+     * 初始化浏览器
+     *
+     * @return
+     */
+    private WebDriver initWebDriver() {
+        return webDriverBootstrapService.initWebDriver();
+    }
+
 
     private void dbSaveDocWebElement(WebElement docwebElement, String sourceUrl) {
         if (docwebElement == null) {

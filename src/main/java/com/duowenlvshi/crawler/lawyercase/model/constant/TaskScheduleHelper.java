@@ -1,10 +1,10 @@
 package com.duowenlvshi.crawler.lawyercase.model.constant;
 
 /**
- * @Auther: wangchun
- * @Date: 2018/8/8 19:11
+ * @author wangchun
+ * @since 2018/8/8 19:11
  */
-public class TaskScheduleHelper {
+public abstract class TaskScheduleHelper {
     /**
      * 初始状态
      */

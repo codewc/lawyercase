@@ -1,7 +1,5 @@
 package com.duowenlvshi.crawler.lawyercase.service.wenshu;
 
-import org.openqa.selenium.WebElement;
-
 /**
  * 裁判文书案例抓取策略
  *
@@ -23,6 +21,6 @@ public interface WenShuCrawlerStrategy {
     /**
      * 计算负面的分数
      */
-    int calculateNegativeScore(WebElement element);
+    int calculateNegativeScore();
 
 }
