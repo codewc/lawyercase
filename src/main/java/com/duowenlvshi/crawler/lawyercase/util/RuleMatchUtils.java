@@ -48,6 +48,30 @@ public class RuleMatchUtils {
         return matchRuleList;
     }
 
+    /**
+     * 根据网页地址解析docId
+     *
+     * @param docUrl
+     * @return
+     */
+    public static String analyzeDocId(String docUrl) {
+        String ret = "";
+        if (StringUtils.isNotBlank(docUrl)) {
+            String[] docs = docUrl.split("DocID=");
+            if (docs.length == 2) {
+                ret = docs[1];
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * 爬取规则
+     *
+     * @param key    规则类型
+     * @param values 规则命中值
+     * @return
+     */
     private static MatchRule buildRuleMatch(String key, String[] values) {
         MatchRule rule = new MatchRule();
         List<String> list = new ArrayList<>();

@@ -25,12 +25,12 @@ public interface WebDriverService {
      */
     TaskSchedule initTaskSchedule(String refereeingDay);
 
-    /**
-     * 解析并设置
-     *
-     * @param webDriver 浏览器
-     * @param rules     爬取规则
-     * @return
-     */
-    WebDriver proceedMatchRule(WebDriver webDriver, List<MatchRule> rules);
+//    /**
+//     * 解析并设置
+//     *
+//     * @param webDriver 浏览器
+//     * @param rules     爬取规则
+//     * @return
+//     */
+//    WebDriver proceedMatchRule(WebDriver webDriver, List<MatchRule> rules);
 }

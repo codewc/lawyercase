@@ -11,5 +11,16 @@ import org.openqa.selenium.WebDriver;
  */
 public interface WebDriverBootstrapService {
 
-    WebDriver initWebDriver();
+    /**
+     * 文书
+     */
+    String WEBSITE_WENSHU = "http://wenshu.court.gov.cn/";
+    /**
+     * 初始化浏览器
+     *
+     * @param webSite 网页
+     * @return 浏览器
+     */
+    WebDriver initWebDriver(String webSite);
+
 }

@@ -1,6 +1,5 @@
 package com.duowenlvshi.crawler.lawyercase.model;
 
-import com.duowenlvshi.crawler.lawyercase.model.constant.LawCaseSearchRuleHelper;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 

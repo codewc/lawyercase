@@ -19,9 +19,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class CrawlerThreadPoolConfig {
 
-    private int corePoolSize = 5;//线程池维护线程的最少数量
+    private int corePoolSize = 3;//线程池维护线程的最少数量
 
-    private int maxPoolSize = 10;//线程池维护线程的最大数量
+    private int maxPoolSize = 8;//线程池维护线程的最大数量
 
     private int queueCapacity = 500; //缓存队列
 

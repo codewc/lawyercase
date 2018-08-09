@@ -4,10 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 案例条件
@@ -29,9 +26,14 @@ public class LawCaseSearchRule implements Serializable {
     private String ruleId;
 
     /**
+     * @see TaskSchedule#refereeingDay
+     */
+    private String refereeingDay;
+
+    /**
      * 筛选条件
      */
-    private String condition;
+    private String conditionMapJson;
 
     /**
      * 匹配数量
@@ -52,6 +54,16 @@ public class LawCaseSearchRule implements Serializable {
      * 待爬取法律案例文档id
      */
     private Set<String> waitDocIdList = new HashSet<>();
+
+    /**
+     * 创建时间
+     */
+    private Date createDate;
+
+    /**
+     * 更新时间
+     */
+    private Date updateDate;
 
     /**
      * 错误码
