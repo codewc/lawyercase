@@ -1,10 +1,9 @@
 package com.duowenlvshi.crawler.lawyercase.service;
 
-import com.duowenlvshi.crawler.lawyercase.bean.MatchRule;
 import com.duowenlvshi.crawler.lawyercase.model.TaskSchedule;
 import org.openqa.selenium.WebDriver;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * 页面爬虫业务组件
@@ -14,7 +13,14 @@ import java.util.List;
  */
 public interface WebDriverService {
 
-    void test();
+    /**
+     * 浏览器执行
+     *
+     * @param webDriver 浏览器
+     * @param bizData   业务参数
+     * @return
+     */
+    WebDriver doService(WebDriver webDriver, Map<String, Object> bizData);
 
 
     /**

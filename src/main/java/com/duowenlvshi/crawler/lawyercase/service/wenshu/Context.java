@@ -1,5 +1,6 @@
 package com.duowenlvshi.crawler.lawyercase.service.wenshu;
 
+import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -18,6 +19,19 @@ public interface Context {
      * @see #getWebDriver()
      */
     boolean setContext(WebDriver webDriver);
+
+    /**
+     * @return
+     */
+    LawCaseSearchRule getLawCaseSearchRule();
+
+    /**
+     * 设置的抓取规则
+     *
+     * @param searchRule 定义好的抓取规则
+     * @return this
+     */
+    Context setLawCaseSearchRule(LawCaseSearchRule searchRule);
 
     /**
      * 获取当前上下文中的浏览器

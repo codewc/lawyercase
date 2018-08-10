@@ -20,11 +20,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,21 +60,39 @@ public class WebDriverServiceImpl implements WebDriverService {
      */
     private static final String BLANK_SPACE = " ";
 
+    public void test(String url, String refereeingDay) {
+//        try {
+//            TaskSchedule taskSchedule = initTaskSchedule(refereeingDay);
+//            List<MatchRule> rules = RuleMatchUtils.buildDefaultMathRules(refereeingDay);
+//            List<LawCaseSearchRule> ruleList = lawCaseSearchRuleService.initLawCaseSearchRule(rules);
+//            for (LawCaseSearchRule rule : ruleList) {
+//                WebDriver driver = webDriverBootstrapService.initWebDriver("http://wenshu.court.gov.cn/");
+//                try {
+//                    driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS).implicitlyWait(30, TimeUnit.SECONDS);
+//                    WebElement head_maxsearch_btn = driver.findElement(By.xpath("//*[@id=\"head_maxsearch_btn\"]"));
+//                    head_maxsearch_btn.click();
+//                    lawCaseSearchRuleService.proceedLawCaseSearchRule(driver, rule);
+//                    Context context = rootContextFactory.createContext(driver);
+//                    lawCaseDocTaskSchemaAction.action(context);
+//                } catch (Exception e) {
+//                    log.error("Exception ->", e);
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            log.error("test发生错误", e);
+//        }
+    }
+
     @Override
-    public void test() {
+    public WebDriver doService(WebDriver webDriver, Map<String, Object> bizData) {
+        //WebDriver driverTemp = webDriverBootstrapService.initWebDriver(WebDriverBootstrapService.WEBSITE_WENSHU);
         try {
-            String refereeingDay = "2018-08-06";
-            TaskSchedule taskSchedule = initTaskSchedule(refereeingDay);
-            List<MatchRule> rules = RuleMatchUtils.buildDefaultMathRules(refereeingDay);
-            List<LawCaseSearchRule> ruleList = lawCaseSearchRuleService.initLawCaseSearchRule(rules);
+            List<LawCaseSearchRule> ruleList = (List) bizData.get("ruleList");
             for (LawCaseSearchRule rule : ruleList) {
-                WebDriver driver = webDriverBootstrapService.initWebDriver("http://wenshu.court.gov.cn/");
                 try {
-                    driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS).implicitlyWait(30, TimeUnit.SECONDS);
-                    WebElement head_maxsearch_btn = driver.findElement(By.xpath("//*[@id=\"head_maxsearch_btn\"]"));
-                    head_maxsearch_btn.click();
-                    lawCaseSearchRuleService.proceedLawCaseSearchRule(driver, rule);
-                    Context context = rootContextFactory.createContext(driver);
+                    lawCaseSearchRuleService.proceedLawCaseSearchRule(webDriver, rule);
+                    Context context = rootContextFactory.createContext(webDriver, rule);
                     lawCaseDocTaskSchemaAction.action(context);
                 } catch (Exception e) {
                     log.error("Exception ->", e);
@@ -81,7 +101,12 @@ public class WebDriverServiceImpl implements WebDriverService {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("test发生错误", e);
+        } finally {
+//            if (driverTemp != null) {
+//                driverTemp.quit();
+//            }
         }
+        return webDriver;
     }
 
     @Override
@@ -101,7 +126,7 @@ public class WebDriverServiceImpl implements WebDriverService {
 //        return lawCaseSearchRules;
 //    }
 
-    private void initCaseTotalNum(String refereeingDay, TaskSchedule taskSchedule) {
+    protected void initCaseTotalNum(String refereeingDay, TaskSchedule taskSchedule) {
         WebDriver driver = webDriverBootstrapService.initWebDriver("http://wenshu.court.gov.cn/");
         try {
             driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
@@ -129,7 +154,7 @@ public class WebDriverServiceImpl implements WebDriverService {
             log.error("initTaskSchedule发生错误-> {}", e);
         } finally {
             if (driver != null) {
-                driver.close();
+                driver.quit();
             }
         }
     }

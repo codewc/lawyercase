@@ -18,6 +18,12 @@ import java.util.List;
 public class MatchRule {
 
     /**
+     * 任务id
+     */
+    private String taskId;
+
+
+    /**
      * 搜索
      */
     private String key;

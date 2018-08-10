@@ -1,6 +1,7 @@
 package com.duowenlvshi.crawler.lawyercase.service.wenshu.impl;
 
 import com.duowenlvshi.crawler.lawyercase.model.LawCaseDoc;
+import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
 import com.duowenlvshi.crawler.lawyercase.repository.LawCaseDocRepository;
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.Context;
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.CrawlAction;
@@ -11,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +37,16 @@ public class LawCaseDocTaskSchemaAction implements CrawlAction {
     @Override
     public void action(Context context) {
         WebDriver driver = context.getWebDriver();
-        WebElement searchBtn = driver.findElement(By.className("head_search_btn"));
-        searchBtn.click();
-        List<WebElement> webElements = driver.findElements(By.ByXPath.xpath("//*[@id=\"resultList\"]/div/table/tbody/tr[1]/td/div/a[2]"));
+        LawCaseSearchRule searchRule = context.getLawCaseSearchRule();
+        WebElement webElement = driver.findElement(By.xpath("//*[@id=\"list_btnmaxsearch\"]"));
+        webElement.click();
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        List<WebElement> webElements = wait.until(new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(WebDriver webDriver) {
+                return driver.findElements(By.ByXPath.xpath("//*[@id=\"resultList\"]/div/table/tbody/tr[1]/td/div/a[2]"));
+            }
+        });
         for (WebElement element : webElements) {
             String href = element.getAttribute("href");
             if (StringUtils.isNotBlank(href) && href.contains("/content/content")) {
@@ -67,7 +77,6 @@ public class LawCaseDocTaskSchemaAction implements CrawlAction {
 //            }
 //            newWindow.close();
 //        }
-        driver.quit();
     }
 
     private void dbSaveDocWebElement(WebElement docWebElement, String sourceUrl) {

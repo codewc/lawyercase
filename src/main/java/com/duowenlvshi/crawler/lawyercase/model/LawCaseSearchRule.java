@@ -26,6 +26,11 @@ public class LawCaseSearchRule implements Serializable {
     private String ruleId;
 
     /**
+     * @see TaskSchedule#taskId
+     */
+    private String taskId;
+
+    /**
      * @see TaskSchedule#refereeingDay
      */
     private String refereeingDay;

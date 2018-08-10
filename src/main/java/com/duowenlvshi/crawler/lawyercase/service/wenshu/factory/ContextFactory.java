@@ -1,5 +1,6 @@
 package com.duowenlvshi.crawler.lawyercase.service.wenshu.factory;
 
+import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.Context;
 import org.openqa.selenium.WebDriver;
 
@@ -21,8 +22,9 @@ public interface ContextFactory {
     /**
      * 创建上下文环境变量
      *
-     * @param webDriver 浏览器对象
+     * @param webDriver  浏览器对象
+     * @param searchRule 设置好的抓取规则
      * @return
      */
-    Context createContext(WebDriver webDriver);
+    Context createContext(WebDriver webDriver, LawCaseSearchRule searchRule);
 }

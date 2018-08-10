@@ -1,6 +1,7 @@
 package com.duowenlvshi.crawler.lawyercase.util;
 
 import com.duowenlvshi.crawler.lawyercase.bean.MatchRule;
+import com.duowenlvshi.crawler.lawyercase.model.TaskSchedule;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -36,14 +37,16 @@ public class RuleMatchUtils {
      *
      * @return 爬取的规则字典
      */
-    public static List<MatchRule> buildDefaultMathRules(String refereeingDay) {
+    public static List<MatchRule> buildDefaultMathRules(TaskSchedule taskSchedule) {
+        String refereeingDay = taskSchedule.getRefereeingDay();
+        String taskId = taskSchedule.getTaskId();
         List<MatchRule> matchRuleList = new ArrayList<>();
         matchRuleList.add(buildRuleMatch(RULE_TYPE_LEVEL_CASE,
-                new String[]{"刑事案件", "民事案件", "行政案件", "赔偿案件", "执行案件"}));
+                new String[]{"刑事案件", "民事案件", "行政案件", "赔偿案件", "执行案件"}, taskId));
         matchRuleList.add(buildRuleMatch(RULE_TYPE_DOC_CATEGORY,
-                new String[]{"判决书", "裁定书", "调解书", "决定书", "通知书", "批复", "答复", "函", "令", "其他"}));
+                new String[]{"判决书", "裁定书", "调解书", "决定书", "通知书", "批复", "答复", "函", "令", "其他"}, taskId));
         if (StringUtils.isNotBlank(refereeingDay)) {
-            matchRuleList.add(buildRuleMatch(RULE_TYPE_REFEREEING_DAY, new String[]{refereeingDay, refereeingDay}));
+            matchRuleList.add(buildRuleMatch(RULE_TYPE_REFEREEING_DAY, new String[]{refereeingDay, refereeingDay}, taskId));
         }
         return matchRuleList;
     }
@@ -72,12 +75,13 @@ public class RuleMatchUtils {
      * @param values 规则命中值
      * @return
      */
-    private static MatchRule buildRuleMatch(String key, String[] values) {
+    private static MatchRule buildRuleMatch(String key, String[] values, String taskId) {
         MatchRule rule = new MatchRule();
         List<String> list = new ArrayList<>();
         for (String value : values) {
             list.add(value);
         }
+        rule.setTaskId(taskId);
         rule.setValue(list);
         rule.setKey(key);
         return rule;

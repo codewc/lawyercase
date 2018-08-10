@@ -1,5 +1,6 @@
 package com.duowenlvshi.crawler.lawyercase.service.wenshu.impl;
 
+import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.Context;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
@@ -15,6 +16,8 @@ public class RootContext implements Context {
 
     private WebDriver webDriver;
 
+    private LawCaseSearchRule lawCaseSearchRule;
+
     public RootContext(WebDriver webDriver) {
         this.setContext(webDriver);
     }
@@ -27,6 +30,17 @@ public class RootContext implements Context {
             ret = true;
         }
         return ret;
+    }
+
+    @Override
+    public LawCaseSearchRule getLawCaseSearchRule() {
+        return lawCaseSearchRule;
+    }
+
+    @Override
+    public Context setLawCaseSearchRule(LawCaseSearchRule searchRule) {
+        this.lawCaseSearchRule = searchRule;
+        return this;
     }
 
     @Override

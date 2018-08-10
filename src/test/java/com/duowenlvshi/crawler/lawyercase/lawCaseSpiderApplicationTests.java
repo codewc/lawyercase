@@ -16,7 +16,7 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
-public class LawcaseApplicationTests {
+public class lawCaseSpiderApplicationTests {
     @Autowired
     private AsyncService asyncService;
     @Autowired
@@ -24,6 +24,10 @@ public class LawcaseApplicationTests {
 
     @Autowired
     private WebDriverService webDriverService;
+
+    @Autowired
+    private SpiderBootStarter spiderBootStarter;
+
     @Test
     public void contextLoads() {
         asyncService.executeAsync();
@@ -48,7 +52,7 @@ public class LawcaseApplicationTests {
     @Test
     public void test2() {
         LawCaseDoc caseDoc = new LawCaseDoc();
-        caseDoc.setDocId("test"+System.currentTimeMillis());
+        caseDoc.setDocId("test" + System.currentTimeMillis());
         caseDoc.setContext("Hello world!");
         repository.insert(caseDoc);
         List<LawCaseDoc> docs = repository.findAll();
@@ -58,9 +62,8 @@ public class LawcaseApplicationTests {
     }
 
     @Test
-    public void test3() {
-        webDriverService.test();
+    public void testSeleniumDownloader() {
+        spiderBootStarter.testSeleniumDownloader("2018-08-08");
     }
-
 
 }

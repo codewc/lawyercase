@@ -6,16 +6,21 @@ import com.duowenlvshi.crawler.lawyercase.bean.MatchRule;
 import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
 import com.duowenlvshi.crawler.lawyercase.model.constant.LawCaseSearchRuleHelper;
 import com.duowenlvshi.crawler.lawyercase.repository.LawCaseSearchRuleRepository;
+import com.duowenlvshi.crawler.lawyercase.service.WebDriverBootstrapService;
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.LawCaseSearchRuleService;
 import com.duowenlvshi.crawler.lawyercase.util.RuleMatchUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wangchun
@@ -41,6 +46,7 @@ public class LawCaseSearchRuleServiceImpl implements LawCaseSearchRuleService {
         Object[] level_case_arr = new Object[]{};
         Object[] doc_category_arr = new Object[]{};
         Object[] refereeing_day_arr = new Object[]{};
+        String taskId = "";
         for (MatchRule rule : rules) {
             String key = rule.getKey();
             if (RuleMatchUtils.RULE_TYPE_LEVEL_CASE.equals(key)) {
@@ -52,6 +58,9 @@ public class LawCaseSearchRuleServiceImpl implements LawCaseSearchRuleService {
             if (RuleMatchUtils.RULE_TYPE_REFEREEING_DAY.equals(key)) {
                 refereeing_day_arr = rule.getValue().toArray();
             }
+            if (StringUtils.isEmpty(taskId)) {
+                taskId = rule.getTaskId();
+            }
         }
         List<LawCaseSearchRule> ruleList = lawCaseSearchRuleRepository.findLawCaseSearchRulesByRefereeingDay((String) refereeing_day_arr[0]);
         if (ruleList != null && ruleList.size() > 0) {
@@ -59,7 +68,7 @@ public class LawCaseSearchRuleServiceImpl implements LawCaseSearchRuleService {
             for (LawCaseSearchRule caseSearchRule : ruleList) {
                 log.info("明细数据： ->{}", caseSearchRule);
             }
-            log.info("LawCaseSearchRule：ruleList数据库已经存在,打印完毕。->总共{}条",ruleList.size());
+            log.info("LawCaseSearchRule：ruleList数据库已经存在,打印完毕。->总共{}条", ruleList.size());
             return ruleList;
         }
 
@@ -75,12 +84,13 @@ public class LawCaseSearchRuleServiceImpl implements LawCaseSearchRuleService {
             serachMap.put(RuleMatchUtils.RULE_TYPE_REFEREEING_DAY, refereeingDay);
             JSONObject mapJson = new JSONObject(serachMap);
             LawCaseSearchRule lawCaseSearchRule = LawCaseSearchRule.builder().
-                    refereeingDay(refereeingDay).
+                    refereeingDay(refereeingDay).taskId(taskId).
                     state(LawCaseSearchRuleHelper.STATE_00).
                     createDate(new Date()).
                     updateDate(new Date()).
                     conditionMapJson(mapJson.toString()).
                     build();
+            lawCaseSearchRuleRepository.save(lawCaseSearchRule);
             log.info("初始化lawCaseSearchRule -> {}", lawCaseSearchRule);
             ++index_2;
             if (index_2 > level_case_arr_length - 1) {
@@ -93,15 +103,31 @@ public class LawCaseSearchRuleServiceImpl implements LawCaseSearchRuleService {
 
     @Override
     public WebDriver proceedLawCaseSearchRule(WebDriver driver, LawCaseSearchRule rule) {
+        if (!WebDriverBootstrapService.WEBSITE_WENSHU.equals(driver.getCurrentUrl())) {
+            driver.navigate().back();
+        }
+        driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS).implicitlyWait(30, TimeUnit.SECONDS);
+        WebElement head_maxsearch_btn = driver.findElement(By.xpath("//*[@id=\"head_maxsearch_btn\"]"));
+        head_maxsearch_btn.click();
         String conditionMapJson = rule.getConditionMapJson();
         log.info(conditionMapJson);
         Map<String, String> conditionMap = JSON.parseObject(conditionMapJson, Map.class);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
         if (conditionMap.containsKey(RuleMatchUtils.RULE_TYPE_REFEREEING_DAY)) {
-            WebElement beginTimeCPRQ = driver.findElement(By.xpath("//*[@id=\"beginTimeCPRQ\"]"));
-            beginTimeCPRQ.clear();
-            beginTimeCPRQ.sendKeys(conditionMap.get(RuleMatchUtils.RULE_TYPE_REFEREEING_DAY) + BLANK_SPACE);// 设置查询开始时间
+            WebElement beginTimeCPRQ = wait.until(new ExpectedCondition<WebElement>() {
+                @Override
+                public WebElement apply(WebDriver webDriver) {
+                    return driver.findElement(By.xpath("//*[@id=\"beginTimeCPRQ\"]"));
+                }
+            });
             WebElement endTimeCPRQ = driver.findElement(By.xpath("//*[@id=\"endTimeCPRQ\"]"));
-            endTimeCPRQ.clear();
+            try {
+                beginTimeCPRQ.clear();
+                endTimeCPRQ.clear();
+            } catch (Exception e) {
+                log.error("beginTimeCPRQ.clear()", e);
+            }
+            beginTimeCPRQ.sendKeys(conditionMap.get(RuleMatchUtils.RULE_TYPE_REFEREEING_DAY) + BLANK_SPACE);// 设置查询开始时间
             endTimeCPRQ.sendKeys(BLANK_SPACE + conditionMap.get(RuleMatchUtils.RULE_TYPE_REFEREEING_DAY));// 设置结束开始时间
         }
 
