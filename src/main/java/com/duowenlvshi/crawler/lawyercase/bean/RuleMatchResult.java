@@ -24,9 +24,19 @@ public class RuleMatchResult {
     private String ruleId;
 
     /**
+     * 任务id
+     */
+    private String taskId;
+
+    /**
      * 匹配的人数
      */
     private int matchTotalNum;
+
+    /**
+     * 当前条数
+     */
+    private int currentMatchNum;
 
     /**
      * 当前结果所属页数

@@ -2,10 +2,9 @@ package com.duowenlvshi.crawler.lawyercase.webmagic.downloader.selenium;
 
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.DownloadService;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
@@ -90,12 +89,13 @@ public class SeleniumDownloader implements Downloader, Closeable {
                 manage.addCookie(cookie);
             }
         }
-
         /*
          * TODO You can add mouse event or other processes
          *
          * @author: bob.li.0718@gmail.com
          */
+//        ChromeOptions options = new ChromeOptions();
+//        options.setProxy();
         Page page = new Page();
         page.setRequest(request);
         page.setUrl(new PlainText(request.getUrl()));

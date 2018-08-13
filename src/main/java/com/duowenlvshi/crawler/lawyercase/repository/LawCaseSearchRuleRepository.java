@@ -18,10 +18,14 @@ public interface LawCaseSearchRuleRepository extends MongoRepository<LawCaseSear
     List<LawCaseSearchRule> findLawCaseSearchRulesByRefereeingDay(String refereeingDay);
 
     /**
-     *
-     * @param refereeingDay
-     * @param conditionMapJson
+     * @param ruleId
      * @return
      */
-    boolean existsLawCaseSearchRuleByRefereeingDayEqualsAndConditionMapJsonEquals(String refereeingDay, String conditionMapJson);
+    LawCaseSearchRule findLawCaseSearchRulesByRuleId(String ruleId);
+
+    /**
+     * @param taskId
+     * @return
+     */
+    List<LawCaseSearchRule> findLawCaseSearchRulesByTaskId(String taskId);
 }

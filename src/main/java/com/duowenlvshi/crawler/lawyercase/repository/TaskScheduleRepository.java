@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface TaskScheduleRepository extends MongoRepository<TaskSchedule, String> {
 
     TaskSchedule findFirstByRefereeingDay(String refereeingDay);
+    
 }
 
 

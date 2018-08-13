@@ -7,20 +7,19 @@ import com.duowenlvshi.crawler.lawyercase.service.WebDriverBootstrapService;
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.LawCaseSearchRuleService;
 import com.duowenlvshi.crawler.lawyercase.util.RuleMatchUtils;
 import com.duowenlvshi.crawler.lawyercase.webmagic.downloader.selenium.SeleniumDownloader;
-import com.duowenlvshi.crawler.lawyercase.webmagic.pipeline.WenShuCourtIndexPipeline;
+import com.duowenlvshi.crawler.lawyercase.webmagic.pipeline.LawCaseSearchRulePipeline;
 import com.duowenlvshi.crawler.lawyercase.webmagic.processor.WenShuCourtIndexPageProcessor;
 import com.duowenlvshi.crawler.lawyercase.webmagic.scheduler.LawCaseRuleQueueScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Spider;
-import us.codecraft.webmagic.pipeline.FilePipeline;
 
 import java.util.List;
 
 /**
- * @Auther: wangchun
- * @Date: 2018/8/10 14:02
+ * @author wangchun
+ * @since 2018/8/10 14:02
  */
 @Service
 public class SpiderBootStarter {
@@ -35,7 +34,7 @@ public class SpiderBootStarter {
     private WebDriverBootstrapService webDriverBootstrapService;
 
     @Autowired
-    private WenShuCourtIndexPipeline wenShuCourtIndexPipeline;
+    private LawCaseSearchRulePipeline lawCaseSearchRulePipeline;
 
     public void testSeleniumDownloader(String refereeingDay) {
         // 初始化日度调度计划
@@ -45,14 +44,14 @@ public class SpiderBootStarter {
         List<LawCaseSearchRule> searchRuleList = lawCaseSearchRuleService.initLawCaseSearchRule(rules);
         // 包装请求参数
         List<Request> requests = RuleMatchUtils.warp(searchRuleList);
-        //从"http://wenshu.court.gov.cn/"开始抓
+        // 从"http://wenshu.court.gov.cn/"开始抓
         Spider.create(new WenShuCourtIndexPageProcessor()).
                 setScheduler(new LawCaseRuleQueueScheduler()).
                 addRequest(requests.toArray(new Request[requests.size()]))
-                .thread(2)// 开启5个线程抓取
-                .setDownloader(seleniumDownloader.setSleepTime(2))
+                .thread(1)// 指定线程个数进行抓取
+                .setDownloader(seleniumDownloader.setSleepTime(10000))
                 //.addPipeline(new FilePipeline())
-                .addPipeline(wenShuCourtIndexPipeline)
+                .addPipeline(lawCaseSearchRulePipeline)
                 .run();// 启动爬虫
     }
 }

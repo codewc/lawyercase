@@ -6,5 +6,7 @@ spring:
   data:
     mongodb:
       #mongodb设置了密码，这样配置：spring.data.mongodb.uri=mongodb://name:pass@localhost:27017/dbname
-      uri: mongodb://192.168.72.131:27017/test
-      #uri: mongodb://192.168.42.129:27017/test
+      #uri: mongodb://192.168.72.131:27017/test
+      uri: mongodb://192.168.42.129:27017/test
+
+      #localhost:6667/duowen-crawler-lawcase/execute/

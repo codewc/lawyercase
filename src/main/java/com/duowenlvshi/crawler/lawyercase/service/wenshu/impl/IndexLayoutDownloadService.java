@@ -38,7 +38,6 @@ public class IndexLayoutDownloadService implements DownloadService {
     public Context doService(WebDriver webDriver, Page page) {
         LawCaseSearchRule rule = (LawCaseSearchRule) page.getRequest().getExtras().get("rule");
         Context context = rootContextFactory.createContext(webDriver, rule).setPage(page);
-        page.putField("ruleId", rule.getRuleId());
         try {
             lawCaseSearchRuleService.proceedLawCaseSearchRule(webDriver, rule);
             lawCaseDocTaskSchemaAction.action(context);

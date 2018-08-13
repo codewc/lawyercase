@@ -13,4 +13,5 @@ import us.codecraft.webmagic.Task;
 public interface Condition {
 
     boolean belong(ResultItems resultItems, Task task);
+
 }

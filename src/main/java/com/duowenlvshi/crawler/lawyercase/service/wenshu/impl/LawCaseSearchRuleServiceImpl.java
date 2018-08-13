@@ -62,7 +62,7 @@ public class LawCaseSearchRuleServiceImpl implements LawCaseSearchRuleService {
                 taskId = rule.getTaskId();
             }
         }
-        List<LawCaseSearchRule> ruleList = lawCaseSearchRuleRepository.findLawCaseSearchRulesByRefereeingDay((String) refereeing_day_arr[0]);
+        List<LawCaseSearchRule> ruleList = lawCaseSearchRuleRepository.findLawCaseSearchRulesByTaskId(taskId);
         if (ruleList != null && ruleList.size() > 0) {
             log.info("LawCaseSearchRule：ruleList数据库已经存在,打印开始：");
             for (LawCaseSearchRule caseSearchRule : ruleList) {

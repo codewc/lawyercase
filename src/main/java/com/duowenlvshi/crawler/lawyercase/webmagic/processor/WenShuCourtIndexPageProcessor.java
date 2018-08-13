@@ -1,6 +1,7 @@
 package com.duowenlvshi.crawler.lawyercase.webmagic.processor;
 
 import com.duowenlvshi.crawler.lawyercase.bean.RuleMatchResult;
+import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.LawCaseSearchRuleService;
 import com.duowenlvshi.crawler.lawyercase.webmagic.downloader.selenium.SeleniumDownloader;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,6 @@ import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -47,19 +47,47 @@ public class WenShuCourtIndexPageProcessor implements PageProcessor {
 //            }
 //        }
         WebDriver driver = items.get("webDriver");
-
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, 60);
         List<WebElement> webElements = wait.until(webDriver -> driver.findElements(By.xpath("//*[@id=\"resultList\"]/div/table/tbody/tr[1]/td/div/a[2]")));
         if (driver.getCurrentUrl().indexOf("VisitRemind.html") > 0) {
             page.setDownloadSuccess(false);//默认设置下载失败
             String errorMsg = String.format("严重错误->:IP地址被禁，请换IP地址！errorUrl->%s", driver.getCurrentUrl());
             throw new IllegalStateException(errorMsg);
         }
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            log.error("", e);
+        }
+
+        int matchTotalNum = -1;
+        try {
+            WebElement pageInfo = wait.until(webDriver -> (webDriver.findElement(By.xpath("//*[@id=\"pageNumber\"]"))));
+            matchTotalNum = Integer.valueOf(pageInfo.getAttribute("total"));
+        } catch (Exception e) {
+            log.error("error", e);
+        } finally {
+            log.info("matchTotalNum ->{}", matchTotalNum);
+        }
+        try {
+            if (matchTotalNum == -1) {
+                WebElement emptyElement = wait.until(webDriver -> (webDriver.findElement(By.xpath("//*[@id=\"resultList\"]"))));
+                String text = emptyElement.getText();
+                if (StringUtils.contains(text, "无符合条件的数据")) {
+                    matchTotalNum = 0;
+                }
+            }
+        } catch (Exception e) {
+            log.error("",e);
+        }
+
+
         boolean state = false;// 是否获取成功
-        RuleMatchResult result = new RuleMatchResult();
-        Set<String> docUrlSet = result.getDocUrls();
-        String ruleId = items.get("ruleId");
-        result.setRuleId(ruleId);
+        RuleMatchResult matchResult = new RuleMatchResult();
+        Set<String> docUrlSet = matchResult.getDocUrls();
+        LawCaseSearchRule searchRule = (LawCaseSearchRule) page.getRequest().getExtras().get("rule");
+        matchResult.setRuleId(searchRule.getRuleId());
+        matchResult.setTaskId(searchRule.getTaskId());
         for (WebElement element : webElements) {
             String href = element.getAttribute("href");
             if (StringUtils.isNotBlank(href) && href.contains("/content/content")) {
@@ -70,8 +98,10 @@ public class WenShuCourtIndexPageProcessor implements PageProcessor {
                 //element.click();
             }
         }
-        result.setCurrentPage(1);
-        result.setMatchTotalNum(docUrlSet.size());
+        matchResult.setCurrentPage(1);
+        matchResult.setCurrentPage(docUrlSet.size());
+        matchResult.setMatchTotalNum(matchTotalNum);
+        page.putField("matchResult", matchResult);
         page.setDownloadSuccess(state);
         if (!page.isDownloadSuccess()) {
             page.setSkip(true);

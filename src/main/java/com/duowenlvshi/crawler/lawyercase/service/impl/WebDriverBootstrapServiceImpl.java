@@ -99,6 +99,7 @@ public class WebDriverBootstrapServiceImpl implements WebDriverBootstrapService 
         } catch (Exception e) {
             e.printStackTrace();
             log.error("initTaskSchedule发生错误-> {}", e);
+            throw e;
         } finally {
             if (driver != null) {
                 driver.quit();

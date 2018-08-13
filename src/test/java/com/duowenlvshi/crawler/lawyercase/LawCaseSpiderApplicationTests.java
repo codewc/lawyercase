@@ -3,7 +3,6 @@ package com.duowenlvshi.crawler.lawyercase;
 import com.duowenlvshi.crawler.lawyercase.model.LawCaseDoc;
 import com.duowenlvshi.crawler.lawyercase.repository.LawCaseDocRepository;
 import com.duowenlvshi.crawler.lawyercase.service.AsyncService;
-import com.duowenlvshi.crawler.lawyercase.service.WebDriverBootstrapService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,14 +15,11 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
-public class lawCaseSpiderApplicationTests {
+public class LawCaseSpiderApplicationTests {
     @Autowired
     private AsyncService asyncService;
     @Autowired
     private LawCaseDocRepository repository;
-
-    @Autowired
-    private WebDriverBootstrapService webDriverBootstrapService;
 
     @Autowired
     private SpiderBootStarter spiderBootStarter;
@@ -63,7 +59,7 @@ public class lawCaseSpiderApplicationTests {
 
     @Test
     public void testSeleniumDownloader() {
-        spiderBootStarter.testSeleniumDownloader("2018-08-08");
+        spiderBootStarter.testSeleniumDownloader("2018-08-06");
     }
 
 }

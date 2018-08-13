@@ -1,8 +1,10 @@
 package com.duowenlvshi.crawler.lawyercase.webmagic.downloader.selenium;
 
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
@@ -127,7 +129,11 @@ public class WebDriverPool {
         } else if (driver.equals(DRIVER_FIREFOX)) {
             mDriver = new FirefoxDriver(sCaps);
         } else if (driver.equals(DRIVER_CHROME)) {
-            mDriver = new ChromeDriver(sCaps);
+            ChromeOptions options = new ChromeOptions();
+//            Proxy proxy = new Proxy();
+//            proxy.setHttpProxy("222.188.193.4:36410");
+//            options.setProxy(proxy);
+            mDriver = new ChromeDriver(options.merge(sCaps));
         } else if (driver.equals(DRIVER_PHANTOMJS)) {
             mDriver = new PhantomJSDriver(sCaps);
         }
