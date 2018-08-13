@@ -2,7 +2,8 @@ package com.duowenlvshi.crawler.lawyercase.bean;
 
 import lombok.*;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 规则匹配结果信息
@@ -17,15 +18,24 @@ import java.util.*;
 @AllArgsConstructor
 @Builder
 public class RuleMatchResult {
+    /**
+     * 规则id
+     */
+    private String ruleId;
 
     /**
      * 匹配的人数
      */
-    private int matchNum;
+    private int matchTotalNum;
 
     /**
-     * 搜索条件
+     * 当前结果所属页数
      */
-    private List<MatchRule> rules = new ArrayList<>();
+    private int currentPage;
+
+    /**
+     * 文档url
+     */
+    private Set<String> docUrls = new HashSet<>();
 
 }

@@ -4,6 +4,7 @@ import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.Context;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
+import us.codecraft.webmagic.Page;
 
 /**
  * 根上下文
@@ -15,6 +16,8 @@ import org.openqa.selenium.WebDriver;
 public class RootContext implements Context {
 
     private WebDriver webDriver;
+
+    private Page page;
 
     private LawCaseSearchRule lawCaseSearchRule;
 
@@ -41,6 +44,17 @@ public class RootContext implements Context {
     public Context setLawCaseSearchRule(LawCaseSearchRule searchRule) {
         this.lawCaseSearchRule = searchRule;
         return this;
+    }
+
+    @Override
+    public Context setPage(Page page) {
+        this.page = page;
+        return this;
+    }
+
+    @Override
+    public Page getPage() {
+        return page;
     }
 
     @Override

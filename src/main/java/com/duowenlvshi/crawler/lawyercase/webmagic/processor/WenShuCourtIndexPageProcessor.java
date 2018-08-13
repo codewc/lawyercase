@@ -1,20 +1,24 @@
 package com.duowenlvshi.crawler.lawyercase.webmagic.processor;
 
-import com.duowenlvshi.crawler.lawyercase.bean.MatchRule;
-import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
-import com.duowenlvshi.crawler.lawyercase.service.wenshu.Context;
+import com.duowenlvshi.crawler.lawyercase.bean.RuleMatchResult;
 import com.duowenlvshi.crawler.lawyercase.service.wenshu.LawCaseSearchRuleService;
-import com.duowenlvshi.crawler.lawyercase.util.RuleMatchUtils;
 import com.duowenlvshi.crawler.lawyercase.webmagic.downloader.selenium.SeleniumDownloader;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Request;
+import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Auther: wangchun
@@ -31,8 +35,7 @@ public class WenShuCourtIndexPageProcessor implements PageProcessor {
     // process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑
     @Override
     public void process(Page page) {
-        System.out.println(page.getHtml());
-        String refereeingDay = page.getResultItems().get("refereeingDay");
+        ResultItems items = page.getResultItems();
 
 //        for (LawCaseSearchRule rule : ruleList) {
 //            try {
@@ -43,10 +46,36 @@ public class WenShuCourtIndexPageProcessor implements PageProcessor {
 //                log.error("Exception ->", e);
 //            }
 //        }
-        // 设置重新爬取的地址
-        List<Request> targetRequests = page.getTargetRequests();
+        WebDriver driver = items.get("webDriver");
 
-
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        List<WebElement> webElements = wait.until(webDriver -> driver.findElements(By.xpath("//*[@id=\"resultList\"]/div/table/tbody/tr[1]/td/div/a[2]")));
+        if (driver.getCurrentUrl().indexOf("VisitRemind.html") > 0) {
+            page.setDownloadSuccess(false);//默认设置下载失败
+            String errorMsg = String.format("严重错误->:IP地址被禁，请换IP地址！errorUrl->%s", driver.getCurrentUrl());
+            throw new IllegalStateException(errorMsg);
+        }
+        boolean state = false;// 是否获取成功
+        RuleMatchResult result = new RuleMatchResult();
+        Set<String> docUrlSet = result.getDocUrls();
+        String ruleId = items.get("ruleId");
+        result.setRuleId(ruleId);
+        for (WebElement element : webElements) {
+            String href = element.getAttribute("href");
+            if (StringUtils.isNotBlank(href) && href.contains("/content/content")) {
+                state = true;
+                //driver.manage().timeouts().implicitlyWait(1, TimeUnit.MINUTES);
+                log.info(href);
+                docUrlSet.add(href);
+                //element.click();
+            }
+        }
+        result.setCurrentPage(1);
+        result.setMatchTotalNum(docUrlSet.size());
+        page.setDownloadSuccess(state);
+        if (!page.isDownloadSuccess()) {
+            page.setSkip(true);
+        }
     }
 
     @Override

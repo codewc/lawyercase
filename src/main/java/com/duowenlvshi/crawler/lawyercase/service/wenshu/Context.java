@@ -2,6 +2,7 @@ package com.duowenlvshi.crawler.lawyercase.service.wenshu;
 
 import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
 import org.openqa.selenium.WebDriver;
+import us.codecraft.webmagic.Page;
 
 /**
  * 环境变量容器
@@ -21,6 +22,13 @@ public interface Context {
     boolean setContext(WebDriver webDriver);
 
     /**
+     * 获取当前上下文中的浏览器
+     *
+     * @return
+     */
+    WebDriver getWebDriver();
+
+    /**
      * @return
      */
     LawCaseSearchRule getLawCaseSearchRule();
@@ -34,11 +42,18 @@ public interface Context {
     Context setLawCaseSearchRule(LawCaseSearchRule searchRule);
 
     /**
-     * 获取当前上下文中的浏览器
+     * 设置页面引用
      *
      * @return
      */
-    WebDriver getWebDriver();
+    Context setPage(Page page);
+
+    /**
+     * 获取当前页面引用
+     *
+     * @return
+     */
+    Page getPage();
 
     /**
      * 关闭当前环境

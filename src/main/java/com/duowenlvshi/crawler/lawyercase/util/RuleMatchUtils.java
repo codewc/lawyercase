@@ -1,8 +1,11 @@
 package com.duowenlvshi.crawler.lawyercase.util;
 
 import com.duowenlvshi.crawler.lawyercase.bean.MatchRule;
+import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
 import com.duowenlvshi.crawler.lawyercase.model.TaskSchedule;
+import com.duowenlvshi.crawler.lawyercase.service.WebDriverBootstrapService;
 import org.apache.commons.lang3.StringUtils;
+import us.codecraft.webmagic.Request;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +19,7 @@ import java.util.List;
  */
 public class RuleMatchUtils {
 
-    private RuleMatchUtils() {
+    public RuleMatchUtils() {
     }
 
     /**
@@ -85,6 +88,21 @@ public class RuleMatchUtils {
         rule.setValue(list);
         rule.setKey(key);
         return rule;
+    }
+
+    /**
+     * @param ruleList
+     * @return
+     */
+    public static List<Request> warp(List<LawCaseSearchRule> ruleList) {
+        List<Request> list = new ArrayList<>();
+        for (LawCaseSearchRule rule : ruleList) {
+            Request request = new Request();
+            request.setUrl(WebDriverBootstrapService.WEBSITE_WENSHU);
+            request.putExtra("rule", rule);
+            list.add(request);
+        }
+        return list;
     }
 }
 

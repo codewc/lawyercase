@@ -3,7 +3,7 @@ package com.duowenlvshi.crawler.lawyercase;
 import com.duowenlvshi.crawler.lawyercase.model.LawCaseDoc;
 import com.duowenlvshi.crawler.lawyercase.repository.LawCaseDocRepository;
 import com.duowenlvshi.crawler.lawyercase.service.AsyncService;
-import com.duowenlvshi.crawler.lawyercase.service.WebDriverService;
+import com.duowenlvshi.crawler.lawyercase.service.WebDriverBootstrapService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +23,7 @@ public class lawCaseSpiderApplicationTests {
     private LawCaseDocRepository repository;
 
     @Autowired
-    private WebDriverService webDriverService;
+    private WebDriverBootstrapService webDriverBootstrapService;
 
     @Autowired
     private SpiderBootStarter spiderBootStarter;

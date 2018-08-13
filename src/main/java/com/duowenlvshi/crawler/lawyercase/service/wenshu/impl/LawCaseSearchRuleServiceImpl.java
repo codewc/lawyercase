@@ -104,6 +104,7 @@ public class LawCaseSearchRuleServiceImpl implements LawCaseSearchRuleService {
     @Override
     public WebDriver proceedLawCaseSearchRule(WebDriver driver, LawCaseSearchRule rule) {
         if (!WebDriverBootstrapService.WEBSITE_WENSHU.equals(driver.getCurrentUrl())) {
+            driver.manage().deleteAllCookies();
             driver.navigate().back();
         }
         driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS).implicitlyWait(30, TimeUnit.SECONDS);

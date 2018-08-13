@@ -12,15 +12,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import us.codecraft.webmagic.Page;
+import us.codecraft.webmagic.ResultItems;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author wangchun
@@ -34,33 +34,14 @@ public class LawCaseDocTaskSchemaAction implements CrawlAction {
     @Autowired
     private LawCaseDocRepository repository;
 
-    @Override
-    public void action(Context context) {
-        WebDriver driver = context.getWebDriver();
-        LawCaseSearchRule searchRule = context.getLawCaseSearchRule();
-        WebElement webElement = driver.findElement(By.xpath("//*[@id=\"list_btnmaxsearch\"]"));
-        webElement.click();
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        List<WebElement> webElements = wait.until(new ExpectedCondition<List<WebElement>>() {
-            @Override
-            public List<WebElement> apply(WebDriver webDriver) {
-                return driver.findElements(By.ByXPath.xpath("//*[@id=\"resultList\"]/div/table/tbody/tr[1]/td/div/a[2]"));
-            }
-        });
-        for (WebElement element : webElements) {
-            String href = element.getAttribute("href");
-            if (StringUtils.isNotBlank(href) && href.contains("/content/content")) {
-                //driver.manage().timeouts().implicitlyWait(1, TimeUnit.MINUTES);
-                log.info(href);
-                //element.click();
-            }
-        }
+//    @Override
+//    public boolean action(Context context) {
 //        Set<String> all_handles = driver.getWindowHandles();
-        //循环判断，把当前句柄从所有句柄中移除，剩下的就是你想要的新窗口
+    //循环判断，把当前句柄从所有句柄中移除，剩下的就是你想要的新窗口
 //        Iterator<String> it = all_handles.iterator();
 //        String handle = null;
 //        WebDriver newWindow = null;
-        //获取当前页面句柄
+    //获取当前页面句柄
 //        String current_handle = driver.getWindowHandle();
 //        while (it.hasNext()) {
 //            handle = it.next();
@@ -77,7 +58,7 @@ public class LawCaseDocTaskSchemaAction implements CrawlAction {
 //            }
 //            newWindow.close();
 //        }
-    }
+//    }
 
     private void dbSaveDocWebElement(WebElement docWebElement, String sourceUrl) {
         if (docWebElement == null) {
@@ -93,4 +74,19 @@ public class LawCaseDocTaskSchemaAction implements CrawlAction {
     }
 
 
+    @Override
+    public boolean action(Context context) {
+        boolean ret = false;
+        try {
+            WebDriver driver = context.getWebDriver();
+            Page page = context.getPage();
+            WebElement webElement = driver.findElement(By.xpath("//*[@id=\"list_btnmaxsearch\"]"));
+            webElement.click();
+            page.putField("webDriver", driver);
+            return page.isDownloadSuccess();
+        } catch (Exception e) {
+            log.error("------↓↓↓------notice------↓↓↓------", e);
+        }
+        return ret;
+    }
 }

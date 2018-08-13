@@ -1,12 +1,7 @@
 package com.duowenlvshi.crawler.lawyercase.webmagic.downloader.selenium;
 
-import com.duowenlvshi.crawler.lawyercase.model.LawCaseSearchRule;
-import com.duowenlvshi.crawler.lawyercase.service.WebDriverService;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import com.duowenlvshi.crawler.lawyercase.service.wenshu.DownloadService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
@@ -18,13 +13,10 @@ import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.downloader.Downloader;
-import us.codecraft.webmagic.selector.Html;
 import us.codecraft.webmagic.selector.PlainText;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,7 +38,7 @@ public class SeleniumDownloader implements Downloader, Closeable {
     private int poolSize = 1;
 
     @Autowired
-    private WebDriverService webDriverService;
+    private DownloadService indexLayoutDownloadService;
 
     /**
      * 新建
@@ -104,16 +96,13 @@ public class SeleniumDownloader implements Downloader, Closeable {
          *
          * @author: bob.li.0718@gmail.com
          */
-        Map<String, Object> bizData = new HashMap<>();
-        bizData.put("ruleList", request.getExtra("searchRuleList"));
-        webDriverService.doService(webDriver, bizData);
+        Page page = new Page();
+        page.setRequest(request);
+        page.setUrl(new PlainText(request.getUrl()));
+        indexLayoutDownloadService.doService(webDriver, page);
         WebElement webElement = webDriver.findElement(By.xpath("/html"));
         String content = webElement.getAttribute("outerHTML");
-        Page page = new Page();
         page.setRawText(content);
-        page.setUrl(new PlainText(request.getUrl()));
-        page.setRequest(request);
-        page.putField("resultMap", new Object());
         webDriverPool.returnToPool(webDriver);
         return page;
     }
