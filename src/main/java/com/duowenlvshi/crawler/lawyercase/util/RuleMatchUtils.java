@@ -9,6 +9,7 @@ import us.codecraft.webmagic.Request;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 匹配规则工具类
@@ -101,6 +102,25 @@ public class RuleMatchUtils {
             request.setUrl(WebDriverBootstrapService.WEBSITE_WENSHU);
             request.putExtra("rule", rule);
             list.add(request);
+        }
+        return list;
+    }
+
+
+    /**
+     * @param ruleList
+     * @return
+     */
+    public static List<Request> transform(List<LawCaseSearchRule> ruleList) {
+        List<Request> list = new ArrayList<>();
+        for (LawCaseSearchRule rule : ruleList) {
+            Set<String> waitDocIdList = rule.getWaitDocIdList();
+            for (String wait : waitDocIdList) {
+                Request request = new Request();
+                request.setUrl(wait);
+                request.putExtra("rule", rule);
+                list.add(request);
+            }
         }
         return list;
     }

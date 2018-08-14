@@ -21,7 +21,7 @@ public interface LawCaseSearchRuleRepository extends MongoRepository<LawCaseSear
      * @param ruleId
      * @return
      */
-    LawCaseSearchRule findLawCaseSearchRulesByRuleId(String ruleId);
+    LawCaseSearchRule findLawCaseSearchRuleByRuleId(String ruleId);
 
     /**
      * @param taskId

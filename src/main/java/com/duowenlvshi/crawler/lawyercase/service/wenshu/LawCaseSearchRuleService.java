@@ -22,6 +22,12 @@ public interface LawCaseSearchRuleService {
      */
     List<LawCaseSearchRule> initLawCaseSearchRule(List<MatchRule> rules);
 
+    /**
+     * @param taskId
+     * @param stateCondition
+     * @return
+     */
+    List<LawCaseSearchRule> queryLawCaseSearchRuleList(String taskId, String... stateCondition);
 
     /**
      * 设置规则

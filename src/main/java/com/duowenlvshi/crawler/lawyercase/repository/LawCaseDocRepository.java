@@ -8,4 +8,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @Date: 2018/8/7 16:31
  */
 public interface LawCaseDocRepository extends MongoRepository<LawCaseDoc, String> {
+
+    /**
+     * @param sourceUrl
+     * @return
+     */
+    LawCaseDoc findLawCaseDocBySourceUrl(String sourceUrl);
 }

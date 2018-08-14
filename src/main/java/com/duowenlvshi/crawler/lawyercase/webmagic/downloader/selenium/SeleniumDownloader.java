@@ -30,11 +30,11 @@ import java.util.Map;
 @Component
 public class SeleniumDownloader implements Downloader, Closeable {
 
-    private volatile WebDriverPool webDriverPool;
+    protected volatile WebDriverPool webDriverPool;
 
-    private int sleepTime = 0;
+    protected int sleepTime = 0;
 
-    private int poolSize = 1;
+    protected int poolSize = 1;
 
     @Autowired
     private DownloadService indexLayoutDownloadService;
@@ -107,7 +107,7 @@ public class SeleniumDownloader implements Downloader, Closeable {
         return page;
     }
 
-    private void checkInit() {
+    protected void checkInit() {
         if (webDriverPool == null) {
             synchronized (this) {
                 webDriverPool = new WebDriverPool(poolSize);
@@ -122,6 +122,8 @@ public class SeleniumDownloader implements Downloader, Closeable {
 
     @Override
     public void close() throws IOException {
-        webDriverPool.closeAll();
+        if (webDriverPool != null) {
+            webDriverPool.closeAll();
+        }
     }
 }

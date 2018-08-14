@@ -25,6 +25,11 @@ public class ROOTContextFactory implements ContextFactory {
     }
 
     @Override
+    public Context createContext(WebDriver webDriver) {
+        return new RootContext(webDriver);
+    }
+
+    @Override
     public Context createContext(WebDriver webDriver, LawCaseSearchRule searchRule) {
         RootContext context = new RootContext(webDriver);
         if (searchRule != null) {

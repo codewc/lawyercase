@@ -54,4 +54,6 @@ public class SpiderBootStarter {
                 .addPipeline(lawCaseSearchRulePipeline)
                 .run();// 启动爬虫
     }
+
+
 }

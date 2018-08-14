@@ -43,7 +43,7 @@ public class LawCaseSearchRulePipeline implements Pipeline {
         if (wenShuCourtIndexCondition.belong(resultItems, task)) {
             Map<String, Object> fields = resultItems.getAll();
             RuleMatchResult matchResult = (RuleMatchResult) fields.get("matchResult");
-            LawCaseSearchRule searchRule = ruleRepository.findLawCaseSearchRulesByRuleId(matchResult.getRuleId());
+            LawCaseSearchRule searchRule = ruleRepository.findLawCaseSearchRuleByRuleId(matchResult.getRuleId());
             searchRule.setCreateDate(new Date());
             searchRule.setRuleId(matchResult.getRuleId());
             searchRule.setBatchCaseNum(matchResult.getMatchTotalNum());

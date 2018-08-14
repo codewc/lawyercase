@@ -24,6 +24,9 @@ public class LawCaseSpiderApplicationTests {
     @Autowired
     private SpiderBootStarter spiderBootStarter;
 
+    @Autowired
+    private SpiderLawCaseDocStarter spiderLawCaseDocStarter;
+
     @Test
     public void contextLoads() {
         asyncService.executeAsync();
@@ -60,6 +63,11 @@ public class LawCaseSpiderApplicationTests {
     @Test
     public void testSeleniumDownloader() {
         spiderBootStarter.testSeleniumDownloader("2018-08-06");
+    }
+
+    @Test
+    public void testLawCaseDocDownloader() {
+        spiderLawCaseDocStarter.executeLawCaseDocDownloader("2018-08-06");
     }
 
 }

@@ -20,6 +20,13 @@ public interface ContextFactory {
     Context createContext();
 
     /**
+     * @param webDriver
+     * @return
+     * @see #createContext(WebDriver, LawCaseSearchRule)
+     */
+    Context createContext(WebDriver webDriver);
+
+    /**
      * 创建上下文环境变量
      *
      * @param webDriver  浏览器对象

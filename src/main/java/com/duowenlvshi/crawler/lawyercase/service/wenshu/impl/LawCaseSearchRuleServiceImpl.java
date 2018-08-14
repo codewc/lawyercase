@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * @author wangchun
@@ -99,6 +101,21 @@ public class LawCaseSearchRuleServiceImpl implements LawCaseSearchRuleService {
             }
         }
         return lawCaseSearchRules;
+    }
+
+    @Override
+    public List<LawCaseSearchRule> queryLawCaseSearchRuleList(String taskId, String... stateCondition) {
+        List<LawCaseSearchRule> searchRuleList = lawCaseSearchRuleRepository.findLawCaseSearchRulesByTaskId(taskId);
+        // 使用lambda表达式过滤出结果并放到result列表里
+        return searchRuleList.stream()
+                .filter((LawCaseSearchRule rule) -> {
+                    boolean ret = false;
+                    if (Arrays.asList(stateCondition).contains(rule.getState())) {
+                        ret = true;
+                    }
+                    return ret;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

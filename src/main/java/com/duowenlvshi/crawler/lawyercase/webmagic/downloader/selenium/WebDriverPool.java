@@ -130,9 +130,27 @@ public class WebDriverPool {
             mDriver = new FirefoxDriver(sCaps);
         } else if (driver.equals(DRIVER_CHROME)) {
             ChromeOptions options = new ChromeOptions();
-//            Proxy proxy = new Proxy();
-//            proxy.setHttpProxy("222.188.193.4:36410");
-//            options.setProxy(proxy);
+            Proxy proxy = new Proxy();
+            proxy.setHttpProxy("115.55.205.72:2991");
+            options.setProxy(proxy);
+//
+//            117.57.23.223:4276
+//            124.152.85.108:3012
+//
+//
+//
+//            218.65.69.244:1659
+//            117.57.62.225:4276
+//            124.152.85.202:3012
+//
+//            112.194.216.95:4246
+//            153.99.25.102:6915
+//            36.26.135.124:7305
+//            117.57.38.200:4226
+//            182.96.194.42:2455
+//            115.212.37.8:4230
+//            111.76.158.56:4234
+//            
             mDriver = new ChromeDriver(options.merge(sCaps));
         } else if (driver.equals(DRIVER_PHANTOMJS)) {
             mDriver = new PhantomJSDriver(sCaps);
@@ -209,6 +227,7 @@ public class WebDriverPool {
     }
 
     public void returnToPool(WebDriver webDriver) {
+        webDriver.manage().deleteAllCookies();
         checkRunning();
         innerQueue.add(webDriver);
     }
