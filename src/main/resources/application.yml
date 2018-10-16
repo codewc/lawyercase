@@ -3,10 +3,19 @@ server:
 spring:
   application:
     name: duowen-crawler-lawcase
-  data:
-    mongodb:
-      #mongodb设置了密码，这样配置：spring.data.mongodb.uri=mongodb://name:pass@localhost:27017/dbname
-      #uri: mongodb://192.168.72.131:27017/test
-      uri: mongodb://192.168.42.129:27017/test
-
-      #localhost:6667/duowen-crawler-lawcase/execute/
+  jpa:
+    database: MYSQL
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+      dialect: org.hibernate.dialect.MySQL5Dialect
+  datasource:
+    url: jdbc:mysql://localhost:3306/test?characterEncoding=utf-8
+    username: root
+    password: 1q2w3e4r
+    driverClassName: com.mysql.jdbc.Driver
+    max-active: 20
+    max-idle: 8
+    min-idle: 8
+    initial-size: 10
