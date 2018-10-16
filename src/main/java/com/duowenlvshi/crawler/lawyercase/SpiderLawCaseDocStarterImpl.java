@@ -15,6 +15,9 @@ import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.SpiderListener;
 import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.downloader.HttpClientDownloader;
+import us.codecraft.webmagic.proxy.Proxy;
+import us.codecraft.webmagic.proxy.ProxyProvider;
+import us.codecraft.webmagic.proxy.SimpleProxyProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +51,7 @@ public class SpiderLawCaseDocStarterImpl implements SpiderLawCaseDocStarter {
             requests.add(request);
         }
         Downloader downloader = new HttpClientDownloader();
+        ((HttpClientDownloader) downloader).setProxyProvider(SimpleProxyProvider.from(new Proxy("", 0)));
         downloader.setThread(1);
 
         List<SpiderListener> spiderListeners = new ArrayList<>();

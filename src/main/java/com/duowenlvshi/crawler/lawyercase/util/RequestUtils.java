@@ -1,7 +1,21 @@
 package com.duowenlvshi.crawler.lawyercase.util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import us.codecraft.webmagic.Request;
+import us.codecraft.webmagic.Site;
+import us.codecraft.webmagic.downloader.HttpClientDownloader;
+import us.codecraft.webmagic.downloader.HttpClientGenerator;
 import us.codecraft.webmagic.model.HttpRequestBody;
+import us.codecraft.webmagic.proxy.Proxy;
 import us.codecraft.webmagic.utils.HttpConstant;
 
 import java.util.HashMap;
@@ -13,6 +27,7 @@ import java.util.Map;
  * @author wangchun
  * @since 2018/10/16 10:44
  */
+@Slf4j
 public class RequestUtils {
     //    payload = {"DocID": doc_id, }
     //    headers = {'Accept': 'text/javascript, application/javascript, */*',
@@ -32,7 +47,6 @@ public class RequestUtils {
     /**
      * 包装请求报文
      *
-     * @param request
      * @param docId
      * @return
      */
@@ -50,6 +64,35 @@ public class RequestUtils {
         request.setMethod(HttpConstant.Method.POST);
         request.setRequestBody(HttpRequestBody.form(params, "UTF-8"));
         return request;
+    }
+
+
+    public static Proxy refresh() throws Exception {
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet httpGet = new HttpGet("http://api.ip.data5u.com/dynamic/get.html?order=cbda12cf21444c55a04c33deb4a9f938&sep=3");
+        httpGet.setHeader("Accept", "application/json");
+        HttpResponse response = httpClient.execute(httpGet);
+        HttpEntity entity = response.getEntity();
+        String jsonText = EntityUtils.toString(entity);
+        log.info(jsonText);
+        EntityUtils.consume(entity);
+        JSONObject jsonObject = JSON.parseObject(jsonText);
+        String host = (String) jsonObject.get("host");
+        Integer port = (Integer) jsonObject.get("port");
+        Proxy proxy = new Proxy(host, port);
+        return proxy;
+    }
+
+    public static void main(String[] args) {
+        try {
+            refresh();
+        } catch (Exception e) {
+
+        } finally {
+
+
+        }
+
     }
 
 }
