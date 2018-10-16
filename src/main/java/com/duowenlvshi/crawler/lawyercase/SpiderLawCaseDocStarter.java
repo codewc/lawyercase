@@ -41,7 +41,7 @@ public class SpiderLawCaseDocStarter {
     private WebDriverBootstrapService webDriverBootstrapService;
 
     public void executeLawCaseDocDownloader(String refereeingDay) {
-        // 初始化日度调度计划
+        // 初始化日度调度计划11
         TaskSchedule taskSchedule = webDriverBootstrapService.initTaskSchedule(refereeingDay);
         List<LawCaseSearchRule> searchRuleList = lawCaseSearchRuleService.queryLawCaseSearchRuleList(taskSchedule.getTaskId(), LawCaseSearchRuleHelper.STATE_10);
         List<Request> requests = RuleMatchUtils.transform(searchRuleList);
