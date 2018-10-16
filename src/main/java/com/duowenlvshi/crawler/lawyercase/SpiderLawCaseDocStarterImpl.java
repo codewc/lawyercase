@@ -37,13 +37,15 @@ public class SpiderLawCaseDocStarterImpl implements SpiderLawCaseDocStarter {
     private DocContextPipeline docContextPipeline;
 
     public void executeLawCaseDocDownloader(String refereeingDay) {
-        CaseDetail detail = caseDetailRepository.fetchOne();
-        Request request = null;
-        if (detail != null) {
-            String docId = detail.getDocId();
+        List<CaseDetail> detailList = caseDetailRepository.fetchBatchData();
+
+        List<Request> requests = new ArrayList<>();
+        for (CaseDetail each : detailList) {
+            String docId = each.getDocId();
             log.info(docId);
-            request = RequestUtils.convertRequest(docId);
-            request.putExtra("detail", detail);
+            Request request = RequestUtils.convertRequest(docId);
+            request.putExtra("detail", each);
+            requests.add(request);
         }
         Downloader downloader = new HttpClientDownloader();
         downloader.setThread(1);
@@ -53,7 +55,7 @@ public class SpiderLawCaseDocStarterImpl implements SpiderLawCaseDocStarter {
 
         Spider.create(docContextPageProcessor)
                 .setScheduler(new LawCaseRuleQueueScheduler())
-                .addRequest(request)
+                .addRequest(requests.toArray(new Request[requests.size()]))
                 .setDownloader(downloader)
                 .addPipeline(docContextPipeline)
                 .setSpiderListeners(spiderListeners)

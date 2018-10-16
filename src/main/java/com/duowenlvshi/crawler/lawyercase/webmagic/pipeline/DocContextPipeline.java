@@ -3,6 +3,7 @@ package com.duowenlvshi.crawler.lawyercase.webmagic.pipeline;
 import com.duowenlvshi.crawler.lawyercase.model.CaseDetail;
 import com.duowenlvshi.crawler.lawyercase.repository.CaseDetailRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -31,6 +32,22 @@ public class DocContextPipeline implements Pipeline {
         CaseDetail caseDetail = (CaseDetail) resultItems.getRequest().getExtra("detail");
         caseDetail.setDocJavascript(javaScript);
         caseDetail.setUpdateDate(new Date());
+        caseDetail.setState(matchState(javaScript));
         caseDetailRepository.saveAndFlush(caseDetail);
+    }
+
+
+    public static String matchState(String javaScript) {
+        String match = CaseDetailRepository.CASE_DETAIL_STATE_09;
+        if (StringUtils.isEmpty(javaScript)) {
+            return match;
+        }
+        if (javaScript.contains("JSON.stringify")) {
+            match = CaseDetailRepository.CASE_DETAIL_STATE_10;
+        }
+        if (javaScript.contains("此篇文书不存在!")) {
+            match = CaseDetailRepository.CASE_DETAIL_STATE_07;
+        }
+        return match;
     }
 }

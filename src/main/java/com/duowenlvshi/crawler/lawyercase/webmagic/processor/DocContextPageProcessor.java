@@ -40,11 +40,6 @@ public class DocContextPageProcessor implements PageProcessor {
             log.warn("未有有效的正文-> {};", javaScript);
             page.setSkip(true);// 跳过解析入库
         }
-        CaseDetail caseDetail = caseDetailRepository.fetchOne();
-        if (caseDetail != null) {
-            page.addTargetRequest(RequestUtils.convertRequest(caseDetail.getDocId()).putExtra("detail", caseDetail));
-
-        }
     }
 
     private boolean success(String javaScript) {

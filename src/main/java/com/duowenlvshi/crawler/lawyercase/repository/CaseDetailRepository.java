@@ -5,13 +5,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author wangchun
  * @since 2018/10/16 15:35
  */
 @Repository
 public interface CaseDetailRepository extends JpaRepository<CaseDetail, String> {
-
     String CASE_DETAIL_STATE_00 = "00";//未开始处理
     String CASE_DETAIL_STATE_01 = "01";//处理中
     String CASE_DETAIL_STATE_03 = "03";//异常
@@ -39,6 +40,6 @@ public interface CaseDetailRepository extends JpaRepository<CaseDetail, String> 
             "doc_court,\n" +
             "doc_javascript\n" +
             "FROM \n" +
-            "case_detail order by create_date limit 1")
-    CaseDetail fetchOne();
+            "case_detail where state='00' order by create_date limit 100")
+    List<CaseDetail> fetchBatchData();
 }
